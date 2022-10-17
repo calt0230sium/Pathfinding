@@ -14,26 +14,20 @@ public class Vector2IntCompare : Comparer<Vector2Int>
 
 public class FlowField 
 {
+    // grid data
     public Cell[,] grid { get; private set; }
     public Vector2Int gridSize { get; private set; }
-    public float cellRadius { get; private set; }
-    public Cell destination;
-    public int numNeighbors;
     private float cellSize;
 
+    // flow field data
+    public Cell destination;
     public static List<Vector2Int> AllDirections = new List<Vector2Int>();
 
-    public FlowField (float _cellSize, Vector2Int _gridSize) 
+    public void InitDirectionsList (int numNeighbors)
     {
-        cellSize = _cellSize;
-        cellRadius = cellSize / 2;
-        gridSize = _gridSize;
-        numNeighbors = 2;
-
+        // Initialization of the neighbor list
         if (AllDirections.Capacity == 0)
         {
-            AllDirections.Clear();
-
             for (int i = -numNeighbors; i <= numNeighbors; i++)
             {
                 for (int j = -numNeighbors; j <= numNeighbors; j++)
@@ -42,9 +36,16 @@ public class FlowField
                     else { AllDirections.Add(new Vector2Int(i, j)); }
                 }
             }
-        }
 
-        AllDirections.Sort(new Vector2IntCompare());
+            AllDirections.Sort(new Vector2IntCompare());
+        }
+    }
+
+    public FlowField (float _cellSize, Vector2Int _gridSize) 
+    {
+        cellSize = _cellSize;
+        gridSize = _gridSize;
+        InitDirectionsList(2);
     }
 
     public void CreateGrid() 
@@ -66,6 +67,7 @@ public class FlowField
         Vector3 cellHalfExtents = Vector3.one;
         int terrainMask = LayerMask.GetMask("Wall");
 
+        // Initialize a cost depending on the type of obstacle that collide with each cell.
         foreach (Cell currentCell in grid) 
         {
             Collider[] obstacles = Physics.OverlapBox(currentCell.worldPos, cellHalfExtents, Quaternion.identity, terrainMask);
@@ -90,6 +92,7 @@ public class FlowField
         Queue<Cell> cellsToCheck = new Queue<Cell>();
         cellsToCheck.Enqueue(destination);
 
+        // Compute the best cost between the neighbors of each cell to reach the goal efficiently.
         while (cellsToCheck.Count > 0)
         {
             Cell currentCell = cellsToCheck.Dequeue();
@@ -97,9 +100,7 @@ public class FlowField
 
             foreach (Cell currentNeighbor in currentNeighbors)
             {
-                if (currentNeighbor.cost == byte.MaxValue) { continue; }
-
-                if (currentNeighbor.cost + currentCell.bestCost < currentNeighbor.bestCost)
+                if (currentNeighbor.cost != byte.MaxValue && currentNeighbor.cost + currentCell.bestCost < currentNeighbor.bestCost)
                 {
                     currentNeighbor.bestCost = (ushort)(currentNeighbor.cost + currentCell.bestCost);
                     cellsToCheck.Enqueue(currentNeighbor);
@@ -110,6 +111,7 @@ public class FlowField
 
     public void CreateFlowField()
     {
+        // Compute the vectors that lead to the best direction in order to reach the goal.
         foreach (Cell currentCell in grid)
         {
             List<Cell> currentNeighbors = GetNeighbors(currentCell.gridIndex);

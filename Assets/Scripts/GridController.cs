@@ -40,10 +40,9 @@ public class GridController : MonoBehaviour
     }
 
     private void Update() {
-        if (Input.GetMouseButtonDown(0)) 
-        {
-            InitializeFlowField();
-        }
+        if (Input.GetMouseButtonDown(1)) InitializeFlowField();
+        if (Input.GetKeyDown(KeyCode.G)) displayGrid = !displayGrid;
+        if (Input.GetKeyDown(KeyCode.F)) displayFlowField = !displayFlowField;
     }
 
     private void OnDrawGizmos()

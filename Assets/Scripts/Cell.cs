@@ -2,8 +2,11 @@ using UnityEngine;
 
 public class Cell
 {
+    // positions
     public Vector3 worldPos;
     public Vector2Int gridIndex;
+
+    // flow field data
     public byte cost;
     public ushort bestCost;
     public Vector2Int bestDirection;

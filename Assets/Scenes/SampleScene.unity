@@ -380,6 +380,7 @@ MonoBehaviour:
   gridSize: {x: 60, y: 30}
   cellSize: 1
   displayGrid: 0
+  displayFlowField: 0
 --- !u!4 &800706668
 Transform:
   m_ObjectHideFlags: 0

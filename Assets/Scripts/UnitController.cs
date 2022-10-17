@@ -20,15 +20,8 @@ public class UnitController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            Spawner();
-        }
-
-        if (Input.GetKeyDown(KeyCode.D))
-        {
-            DestroyAllUnit();
-        }
+        if (Input.GetKeyDown(KeyCode.S)) Spawner();
+        if (Input.GetKeyDown(KeyCode.D)) DestroyAllUnit();
     }
 
     private void FixedUpdate()
